@@ -1,12 +1,12 @@
 import './App.css'
+import Form from './Components/Form'
+
 
 function App() {
 
   return (
     <>
-
-      <h1> hello world</h1>
-
+      <Form />
     </>
   )
 }
