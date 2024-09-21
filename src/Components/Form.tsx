@@ -1,34 +1,58 @@
 import { FieldValues, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { categories } from "../helper/constant"
+
 
 
 const schema = z.object({
-    name: z.string().min(3),
-    age: z.number({ invalid_type_error: 'Age field is required' }).min(18)
+    description: z.string().min(3, { message: "description should be at least 3 char" }).max(50),
+    amount: z.number({ invalid_type_error: "Amount is required" }).min(0.01).max(100_000),
+    category: z.enum(categories, { errorMap: () => ({ message: "category is required" }) })
 })
 
-type FormData = z.infer<typeof schema>
-const Form = () => {
+interface Props {
+    onSubmit: (data: ExpenseFormData) => void
+}
+
+type ExpenseFormData = z.infer<typeof schema>
+const Form = ({ onSubmit }: Props) => {
+    const { register, handleSubmit, reset, formState: { errors, isValid } } = useForm<ExpenseFormData>({ resolver: zodResolver(schema) })
 
 
-    const { register, handleSubmit, formState: { errors, isValid } } = useForm<FormData>({ resolver: zodResolver(schema) })
-
-    const onSubmit = (data: FieldValues) => console.log(data)
 
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(data => {
+            onSubmit(data);
+            reset()
+        })}>
             <div className="mb-3">
-                <label htmlFor="name" className="form-label">Name</label>
-                <input id="name" {...register("name")} type="text" className="form-control" />
+                <label htmlFor="description" className="form-label">Description</label>
+                <input id="description" {...register("description")} type="text" className="form-control" />
 
-                {errors.name && <p className="text-danger"> {errors.name.message}</p>}
+                {errors.description && <p className="text-danger"> {errors.description.message}</p>}
             </div>
             <div className="mb-3">
-                <label htmlFor="age" className="form-label">Age</label>
-                <input id='age' {...register("age", { valueAsNumber: true })} type="number" className='form-control' />
-                {errors.age && <p className="text-danger"> {errors.age.message}</p>}
+                <label htmlFor="age" className="form-label">Amount</label>
+                <input id='amount' {...register("amount", { valueAsNumber: true })} type="number" className='form-control' />
+                {errors.amount && <p className="text-danger"> {errors.amount.message}</p>}
+
+            </div>
+
+            <div className="mb-3">
+                <label htmlFor="category" className="form-label">Category</label>
+                <select id="category" className="form-control" {...register("category")}>
+                    <option value=""></option>
+                    {categories.map(category =>
+
+
+                        <option key={category} value={category}>
+                            {category}
+                        </option>)}
+                </select>
+                {errors.category && <p className="text-danger"> {errors.category.message}</p>}
+
 
             </div>
             <button disabled={!isValid} className='btn btn-primary' type='submit'>Submit </button>
