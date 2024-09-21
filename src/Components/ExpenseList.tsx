@@ -37,7 +37,7 @@ const ExpenseList = ({ expenses, onDelete }: Props) => {
             <tfoot>
                 <tr>
                     <td>Total</td>
-                    <td>Rs{expenses.reduce((acc, expense) => expense.amount + acc, 0).toFixed(2)}</td>
+                    <td>Rs:{expenses.reduce((acc, expense) => expense.amount + acc, 0).toFixed(2)}</td>
                     <td></td>
                     <td></td>
                 </tr>
